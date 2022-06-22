@@ -1,8 +1,8 @@
 package main
 
 import (
-	"GoAuth/database"
-	"GoAuth/routes"
+	"github.com/faruqii/GoAuth/database"
+	"github.com/faruqii/GoAuth/routes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 )

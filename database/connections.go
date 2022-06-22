@@ -1,7 +1,7 @@
 package database
 
 import (
-	"GoAuth/models"
+	"github.com/faruqii/GoAuth/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
@@ -18,7 +18,7 @@ func Connect() {
 
 	DB = connections
 
-	err = connections.AutoMigrate(&models.User{})
+	err = connections.AutoMigrate(&models.User{}, &models.Product{})
 	if err != nil {
 		return
 	}
