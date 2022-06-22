@@ -9,7 +9,7 @@
 
 ### Run docker compose
 
-```bash
+```cmd
 $ docker-compose up
 ```
 
@@ -20,8 +20,8 @@ require (
 	github.com/gofiber/fiber/v2 v2.25.0
 	gorm.io/driver/postgres v1.2.3
 	gorm.io/gorm v1.22.5
-    github.com/dgrijalva/jwt-go
-    golang.org/x/crypto/bcrypt
+    	github.com/dgrijalva/jwt-go
+    	golang.org/x/crypto/bcrypt
 )
 ```
 
