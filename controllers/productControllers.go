@@ -8,15 +8,23 @@ import (
 )
 
 func CreateProduct(c *fiber.Ctx) error {
-
-	product := models.Product{}
-	merchant := models.Merchant{}
-	if err := c.BodyParser(&product); err != nil {
-		// assign product to merchant and make sure merchant is not nil
-		database.DB.Find(&merchant, "name = ?", product.Merchant)
+	req := models.CreateProductParam{}
+	if err := c.BodyParser(&req); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(err.Error())
 	}
-	err := database.DB.Create(&product).Error
+	product := models.Product{
+		Name:        req.Name,
+		ProductType: req.ProductType,
+		Price:       req.Price,
+		MerchantID:  req.MerchantID,
+	}
+	merchant := models.Merchant{}
+	// assign product to merchant and make sure merchant is not nil
+	err := database.DB.Find(&merchant, "id = ?", req.MerchantID).Error
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+	err = database.DB.Create(&product).Error
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
@@ -31,7 +39,7 @@ func CreateProduct(c *fiber.Ctx) error {
 func GetAllProduct(c *fiber.Ctx) error {
 
 	var products []models.Product
-	err := database.DB.Find(&products).Error
+	err := database.DB.Preload("Merchant").Find(&products).Error
 	if err != nil {
 		return c.JSON(err)
 	}

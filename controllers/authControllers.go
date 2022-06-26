@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
+	"net/http"
 	"strconv"
 	"time"
 )
@@ -13,43 +14,44 @@ import (
 const SecretKey = "secret"
 
 func Register(c *fiber.Ctx) error {
-	var data map[string]string
+	req := models.RegisterParam{}
 
-	if err := c.BodyParser(&data); err != nil {
+	if err := c.BodyParser(&req); err != nil {
 		return err
 	}
 
-	password, _ := bcrypt.GenerateFromPassword([]byte(data["password"]), 12)
+	password, err := bcrypt.GenerateFromPassword([]byte(req.Password), 12)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
 	user := models.User{
-		Name:     data["name"],
-		Email:    data["email"],
+		Name:     req.Name,
+		Email:    req.Email,
 		Password: password,
 	}
 
-	database.DB.Create(&user)
-
+	err = database.DB.Create(&user).Error
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
 	return c.JSON(user)
 }
 
 func Login(c *fiber.Ctx) error {
-	var data map[string]string
+	req := models.LoginParam{}
 
-	if err := c.BodyParser(&data); err != nil {
+	if err := c.BodyParser(&req); err != nil {
 		return err
 	}
 
 	var user models.User
 
-	database.DB.Where("email = ?", data["email"]).First(&user)
-
-	if user.Id == 0 {
-		c.Status(fiber.StatusNotFound)
-		return c.JSON(fiber.Map{
-			"message": "Invalid Credentials",
-		})
+	err := database.DB.Where("email = ?", req.Email).First(&user).Error
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
 
-	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(data["password"])); err != nil {
+	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(req.Password)); err != nil {
 		c.Status(fiber.StatusBadRequest)
 		return c.JSON(fiber.Map{
 			"message": "Invalid Credentials",
@@ -57,7 +59,7 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer:    strconv.Itoa(int(user.Id)),
+		Issuer:    strconv.Itoa(int(user.ID)),
 		ExpiresAt: time.Now().Add(time.Hour * 1).Unix(),
 	})
 
@@ -70,10 +72,20 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
+	userToken := models.UserToken{
+		UserID: user.ID,
+		Token:  token,
+	}
+
+	err = database.DB.Create(&userToken).Error
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+
 	return c.JSON(fiber.Map{
-		"message": "Login Successfully",
-		"usename": user.Name,
-		"token":   token,
+		"message":  "Login Successfully",
+		"username": user.Name,
+		"token":    token,
 	})
 }
 

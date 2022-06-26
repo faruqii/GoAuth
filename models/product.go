@@ -1,9 +1,19 @@
 package models
 
+import "gorm.io/gorm"
+
 type Product struct {
-	Id          int64    `json:"id"`
+	gorm.Model
 	Name        string   `json:"name" validate:"required, string"`
 	ProductType string   `json:"product_type" validate:"required, string"`
-	Price       int      `json:"price" validate:"required"`
-	Merchant    Merchant `gorm:"references:Name" json:"merchant"`
+	Price       float64  `json:"price" validate:"required"`
+	MerchantID  int64    `json:"merchant_id"`
+	Merchant    Merchant `json:"merchant"`
+}
+
+type CreateProductParam struct {
+	Name        string  `json:"name" validate:"required, string"`
+	ProductType string  `json:"product_type" validate:"required, string"`
+	Price       float64 `json:"price" validate:"required"`
+	MerchantID  int64   `json:"merchant_id"`
 }

@@ -1,7 +1,13 @@
 package models
 
+import "gorm.io/gorm"
+
 type Merchant struct {
-	Id string `json:"Id"`
-	Name string `json:"Name"`
-	Rating string `json:"Rating"`
+	gorm.Model
+	Name     string    `json:"name"`
+	Products []Product `json:"products"`
+}
+
+type CreateMerchantParam struct {
+	Name string `json:"name"`
 }

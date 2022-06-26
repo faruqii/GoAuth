@@ -8,10 +8,12 @@ import (
 )
 
 func CreateMerchant(c *fiber.Ctx) error {
-	merchant := models.Merchant{}
-	if err := c.BodyParser(&merchant); err != nil {
-		// assign product to merchant and make sure merchant is not nil
+	req := models.CreateMerchantParam{}
+	if err := c.BodyParser(&req); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(err.Error())
+	}
+	merchant := models.Merchant{
+		Name: req.Name,
 	}
 	err := database.DB.Create(&merchant).Error
 	if err != nil {
