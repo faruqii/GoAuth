@@ -6,13 +6,24 @@ import (
 )
 
 func Setup(app *fiber.App) {
+
+	// Endpoint
+	api := app.Group("/api")
+
 	// User Auth
-	app.Post("/api/register", controllers.Register)
-	app.Post("/api/Login", controllers.Login)
-	app.Get("/api/user", controllers.User)
-	app.Post("/api/logout", controllers.Logout)
+	user := api.Group("/user")
+	user.Post("/register", controllers.Register)
+	user.Post("/Login", controllers.Login)
+	user.Get("/user", controllers.User)
+	user.Post("/logout", controllers.Logout)
 
 	// Product
-	app.Post("/api/CreateProduct", controllers.CreateProduct)
-	app.Get("/api/GetAllProducts", controllers.GetAllProduct)
+	product := api.Group("/product")
+	product.Post("/CreateProduct", controllers.CreateProduct)
+	product.Get("/GetAllProducts", controllers.GetAllProduct)
+	
+	// Merchant
+	merchant := api.Group("/merchant")
+	merchant.Post("/CreateMerchant", controllers.CreateMerchant)
+	merchant.Get("/GetAllMerchant", controllers.GetAllMerchant)
 }

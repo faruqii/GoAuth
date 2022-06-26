@@ -18,7 +18,7 @@ func Connect() {
 
 	DB = connections
 
-	err = connections.AutoMigrate(&models.User{}, &models.Product{})
+	err = connections.AutoMigrate(&models.User{}, &models.Product{}, &models.Merchant{})
 	if err != nil {
 		return
 	}

@@ -19,7 +19,7 @@ func Register(c *fiber.Ctx) error {
 		return err
 	}
 
-	password, _ := bcrypt.GenerateFromPassword([]byte(data["password"]), 14)
+	password, _ := bcrypt.GenerateFromPassword([]byte(data["password"]), 12)
 	user := models.User{
 		Name:     data["name"],
 		Email:    data["email"],
@@ -45,20 +45,20 @@ func Login(c *fiber.Ctx) error {
 	if user.Id == 0 {
 		c.Status(fiber.StatusNotFound)
 		return c.JSON(fiber.Map{
-			"message": "user not found",
+			"message": "Invalid Credentials",
 		})
 	}
 
 	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(data["password"])); err != nil {
 		c.Status(fiber.StatusBadRequest)
 		return c.JSON(fiber.Map{
-			"message": "Incorrect Password",
+			"message": "Invalid Credentials",
 		})
 	}
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
 		Issuer:    strconv.Itoa(int(user.Id)),
-		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(), // Expired at 1 day
+		ExpiresAt: time.Now().Add(time.Hour * 1).Unix(),
 	})
 
 	token, err := claims.SignedString([]byte(SecretKey))
@@ -66,21 +66,14 @@ func Login(c *fiber.Ctx) error {
 	if err != nil {
 		c.Status(fiber.StatusInternalServerError)
 		return c.JSON(fiber.Map{
-			"message": "Could not Login at the moment",
+			"message": "could not login",
 		})
 	}
 
-	cookie := fiber.Cookie{
-		Name:     "jwt",
-		Value:    token,
-		Expires:  time.Now().Add(time.Hour * 24),
-		HTTPOnly: true,
-	}
-
-	c.Cookie(&cookie)
-
 	return c.JSON(fiber.Map{
-		"message": "success",
+		"message": "Login Successfully",
+		"usename": user.Name,
+		"token":   token,
 	})
 }
 
