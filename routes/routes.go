@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/faruqii/GoAuth/controllers"
+	"github.com/faruqii/GoAuth/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -19,9 +20,9 @@ func Setup(app *fiber.App) {
 
 	// Product
 	product := api.Group("/product")
-	product.Post("/CreateProduct", controllers.CreateProduct)
+	product.Use(middleware.New(middleware.Config{})).Post("/CreateProduct", controllers.CreateProduct)
 	product.Get("/GetAllProducts", controllers.GetAllProduct)
-	
+
 	// Merchant
 	merchant := api.Group("/merchant")
 	merchant.Post("/CreateMerchant", controllers.CreateMerchant)
