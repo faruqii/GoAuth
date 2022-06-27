@@ -17,18 +17,19 @@ type Config struct {
 func New(config Config) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		header := c.GetReqHeaders()
-		if _, ok := header["token"]; !ok {
+
+		if _, ok := header["Token"]; !ok {
 			return errors.New("token missing")
 		}
 
 		// if exists check the user token table
 		userToken := models.UserToken{}
-		err := database.DB.Find(&userToken, "token = ?", header["token"]).Error
+		err := database.DB.Find(&userToken, "token = ?", header["Token"]).Error
 		if err != nil {
 			return errors.New("token fail")
 		}
 		c.Locals("user_id", userToken.UserID)
 		log.Printf("user %d, pass token middleware", userToken.UserID)
-		return nil
+		return c.Next()
 	}
 }
