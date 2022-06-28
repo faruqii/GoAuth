@@ -1,10 +1,11 @@
 package database
 
 import (
+	"log"
+
 	"github.com/faruqii/GoAuth/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
 )
 
 var DB *gorm.DB

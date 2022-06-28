@@ -1,14 +1,15 @@
 package controllers
 
 import (
+	"net/http"
+	"strconv"
+	"time"
+
 	"github.com/faruqii/GoAuth/database"
 	"github.com/faruqii/GoAuth/models"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
-	"net/http"
-	"strconv"
-	"time"
 )
 
 const SecretKey = "secret"

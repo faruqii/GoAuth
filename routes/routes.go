@@ -19,12 +19,16 @@ func Setup(app *fiber.App) {
 	user.Post("/logout", controllers.Logout)
 
 	// Product
-	product := api.Group("/product")
-	product.Use(middleware.New(middleware.Config{})).Post("/CreateProduct", controllers.CreateProduct)
+	product := api.Group("/product").Use(middleware.New(middleware.Config{}))
+	product.Post("/CreateProduct", controllers.CreateProduct)
 	product.Get("/GetAllProducts", controllers.GetAllProduct)
+	product.Get("/SearchProductByName", controllers.SearchProductByName)
+	product.Put("/UpdateProduct", controllers.UpdateProduct)
+	product.Delete("/DeleteProduct", controllers.DeleteProduct)
 
 	// Merchant
-	merchant := api.Group("/merchant")
+	merchant := api.Group("/merchant").Use(middleware.New(middleware.Config{}))
 	merchant.Post("/CreateMerchant", controllers.CreateMerchant)
 	merchant.Get("/GetAllMerchant", controllers.GetAllMerchant)
+	merchant.Get("/SearchMerchantByName", controllers.SearchMerchantByName)
 }
