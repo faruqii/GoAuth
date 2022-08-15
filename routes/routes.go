@@ -23,7 +23,7 @@ func Setup(app *fiber.App) {
 	product.Post("/CreateProduct", controllers.CreateProduct)
 	product.Get("/GetAllProducts", controllers.GetAllProduct)
 	product.Get("/SearchProductByName", controllers.SearchProductByName)
-	product.Put("/UpdateProduct", controllers.UpdateProduct)
+	product.Patch("/UpdateProduct", controllers.UpdateProduct)
 	product.Delete("/DeleteProduct", controllers.DeleteProduct)
 
 	// Merchant
@@ -31,6 +31,6 @@ func Setup(app *fiber.App) {
 	merchant.Post("/CreateMerchant", controllers.CreateMerchant)
 	merchant.Get("/GetAllMerchant", controllers.GetAllMerchant)
 	merchant.Get("/SearchMerchantByName", controllers.SearchMerchantByName)
-	merchant.Put("/UpdateMerchant", controllers.UpdateMerchant)
+	merchant.Patch("/UpdateMerchant", controllers.UpdateMerchant)
 	merchant.Delete("/DeleteMerchant", controllers.DeleteMerchant)
 }

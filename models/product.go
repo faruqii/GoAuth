@@ -1,6 +1,8 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type Product struct {
 	gorm.Model
@@ -8,7 +10,7 @@ type Product struct {
 	ProductType string   `json:"product_type" validate:"required, string"`
 	Price       float64  `json:"price" validate:"required"`
 	MerchantID  int64    `json:"merchant_id"`
-	Merchant    Merchant `json:"merchant"`
+	Merchant    Merchant `json:"merchant" gorm:"foreignkey:MerchantID"`
 }
 
 type CreateProductParam struct {

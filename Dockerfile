@@ -1,13 +1,18 @@
-FROM golang:1.18
-
-RUN apk update && apk add --no-cache git
+FROM golang:1.18-alpine
 
 WORKDIR /app
 
-COPY . .
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod download
 
-RUN go mod tidy
+COPY . ./
 
-RUN go build -o binary
+RUN ls
 
-ENTRYPOINT ["/app/binary"]
+RUN go build -o /app
+
+EXPOSE 3000
+
+CMD ["/app"]
+

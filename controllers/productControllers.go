@@ -39,7 +39,7 @@ func CreateProduct(c *fiber.Ctx) error {
 
 func GetAllProduct(c *fiber.Ctx) error {
 
-	var products []models.Product
+	products := []models.Product{}
 	err := database.DB.Preload("Merchant").Find(&products).Error
 	if err != nil {
 		return c.Status(http.StatusNotFound).JSON(err)
@@ -55,17 +55,17 @@ func GetAllProduct(c *fiber.Ctx) error {
 func SearchProductByName(c *fiber.Ctx) error {
 	// find product by name using query Like from postgres
 	name := c.Params("name")
-
-	var products []models.Product
+	products := models.Product{}
 	err := database.DB.Where("name LIKE ?", "%"+name+"%").Find(&products).Error
 	if err != nil {
 		return c.Status(http.StatusNotFound).JSON(err)
 	}
 	return c.Status(http.StatusOK).JSON(fiber.Map{
 		"status":  "success",
-		"message": "Successful Get All Products",
+		"message": "Successful Search Product By Name",
 		"data":    products,
 	})
+
 }
 
 func UpdateProduct(c *fiber.Ctx) error {

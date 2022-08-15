@@ -30,39 +30,53 @@ func CreateMerchant(c *fiber.Ctx) error {
 }
 
 func GetAllMerchant(c *fiber.Ctx) error {
-
-	var merchant []models.Merchant
-	err := database.DB.Find(&merchant).Error
+	// display all merchant
+	// display all products that belong to that merchant
+	var merchants []models.Merchant
+	err := database.DB.Find(&merchants).Error
 	if err != nil {
 		return c.Status(http.StatusNotFound).JSON(err)
 	}
-
+	products := models.Product{}
+	for _, merchant := range merchants {
+		err := database.DB.Where("merchant_id = ?", merchant.ID).Find(&products).Error
+		if err != nil {
+			return c.Status(http.StatusNotFound).JSON(err)
+		}
+		
+	}
 	return c.Status(http.StatusOK).JSON(fiber.Map{
 		"status":  "success",
-		"message": "Successful Get All Merchant",
-		"data":    merchant,
+		"message": "Successful Get All Merchants",
+		"data":    merchants,
 	})
+
 }
 
 func SearchMerchantByName(c *fiber.Ctx) error {
-	// In this function, we will search merchant and display all the products that belong to that merchant
+	// In this function, we will search merchant and display all the products name that belong to that merchant
 	// find merchant by name
 	name := c.Params("name")
-	merchant := models.Merchant{} 
+	merchant := []models.Merchant{}
 	err := database.DB.Where("name = ?", name).Find(&merchant).Error
 	if err != nil {
 		return c.Status(http.StatusNotFound).JSON(err)
 	}
-	var products []models.Product
-	err = database.DB.Where("merchant_id = ?", merchant.ID).Find(&products).Error
-	if err != nil {
-		return c.Status(http.StatusNotFound).JSON(err)
+	// find all products that belong to that merchant then display it 
+	products := []models.Product{}
+	for _, merchant := range merchant {
+		err := database.DB.Where("merchant_id = ?", merchant.ID).Find(&products).Error
+		if err != nil {
+			return c.Status(http.StatusNotFound).JSON(err)
+		}
+		merchant.Products = products
 	}
 	return c.Status(http.StatusOK).JSON(fiber.Map{
 		"status":  "success",
-		"message": "Successful Get All Products",
-		"data":    products,
+		"message": "Successful Get All Merchants",
+		"data":    merchant,
 	})
+	
 }
 
 func UpdateMerchant(c *fiber.Ctx) error {
